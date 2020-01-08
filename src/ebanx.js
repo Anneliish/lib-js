@@ -152,8 +152,8 @@ EBANX.validator = (function () {
        * @return {void}
        */
       validateMode: function (mode) {
-        if (mode.match(/^(test|production)$/) === null) {
-          throw new EBANX.errors.InvalidConfigurationError('Invalid mode, please, use "test" or "production" as test mode.', 'mode');
+        if (mode.match(/^(test|production|local)$/) === null) {
+          throw new EBANX.errors.InvalidConfigurationError('Invalid mode, please, use "test", "local" or "production" as test mode.', 'mode');
         }
       }
     },
@@ -311,7 +311,14 @@ EBANX.utils = (function () {
   var utilsModule = {
     api: {
       path: function () {
-        return (EBANX.config.isLive() ? process.env.EBANX_API_PRODUCTION : process.env.EBANX_API_SANDBOX);
+          switch(EBANX.config.getMode()) {
+            case 'production':
+              return process.env.EBANX_API_PRODUCTION
+            case 'test':
+              return process.env.EBANX_API_SANDBOX
+            case 'local':
+              return process.env.EBANX_API_LOCAL
+          }
       }
     },
     availableCountries: ['br', 'mx', 'co', 'ar', 'pe', 'cl', 'ec', 'bo'].join(', '),
